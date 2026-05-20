@@ -3,3 +3,17 @@
 [![License](https://img.shields.io/badge/license-Custom--SA-%231b25e5)](https://raw.githubusercontent.com/codesavant23/gentestsai/refs/heads/main/LICENSE)
 
 A Python component for code declaration extraction (used in [GenTestsAILib](https://github.com/codesavant23/gentestsai/))
+
+## How to get the component
+
+### Installation
+
+  ```python
+  pip install git+https://github.com/codesavant23/decls_extraction
+  ```
+
+### Update
+
+  ```python
+  pip install git+https://github.com/codesavant23/decls_extraction --upgrade
+  ```
