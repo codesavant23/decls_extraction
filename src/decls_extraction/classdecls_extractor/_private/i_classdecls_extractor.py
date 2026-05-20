@@ -11,6 +11,18 @@ class IClassDeclsExtractor(ABC):
         The code parser used is specified by the subclasses of this interface.
 	"""
 	
+	@abstractmethod
+	def class_name(self) -> str:
+		"""
+			Returns the name of the class associated with this IClassDeclsExtractor
+            
+            Returns
+            -------
+                str
+                    A string containing the name of the class associated with this object
+		"""
+		pass
+	
 	
 	@abstractmethod
 	def decorators(self) -> List[str]:
@@ -41,14 +53,14 @@ class IClassDeclsExtractor(ABC):
 	
 	
 	@abstractmethod
-	def class_name(self) -> str:
+	def contract(self) -> str:
 		"""
-			Returns the name of the class associated with this IClassDeclsExtractor
+			Retrieves the associated class contract
             
             Returns
             -------
-                str
-                    A string containing the name of the class associated with this object
+               str
+                    A string containing the associated class contract
 		"""
 		pass
 	

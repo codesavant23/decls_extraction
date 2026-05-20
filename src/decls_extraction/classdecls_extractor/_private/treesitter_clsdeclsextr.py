@@ -60,7 +60,7 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 		
 		for poss_decor in self._class.named_children:
 			if poss_decor.type == "decorator":
-				decorator = poss_decor.text.decode().replace("@", "")
+				decorator = poss_decor.text.decode("utf-8").replace("@", "")
 				decors.append(decorator)
 				
 		return decors
@@ -72,15 +72,26 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 		
 		if bases is not None:
 			for base in bases.named_children:
-				superclss.append(base.text.decode())
+				superclss.append(base.text.decode("utf-8"))
 			
 		return superclss
 	
 	
-	def class_name(self) -> str:
-		class_node: TreeNode = self._get_classdef_node()
+	def contract(self) -> str:
+		contract: str = ""
 		
-		return class_node.child_by_field_name("name").text.decode("utf-8")
+		body: TreeNode = self._get_classdef_node().child_by_field_name("body")
+		first_stmt: TreeNode
+		express: TreeNode
+		
+		if body is not None:
+			first_stmt = body.named_children[0] if body.named_children else None
+			if (first_stmt.type == "expression_statement") and (first_stmt.named_children is not None):
+				express = first_stmt.named_children[0]
+				if express.type == "string":
+					contract = express.text.decode("utf-8")
+					
+		return contract
 	
 	
 	def method_names(self) -> List[str]:
