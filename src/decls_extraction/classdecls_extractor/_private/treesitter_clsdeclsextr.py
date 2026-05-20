@@ -66,6 +66,17 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 		return decors
 	
 	
+	def bases(self) -> List[str]:
+		superclss: list[str] = []
+		bases: TreeNode = self._get_classdef_node().child_by_field_name("superclasses")
+		
+		if bases is not None:
+			for base in bases.named_children:
+				superclss.append(base.text.decode())
+			
+		return superclss
+	
+	
 	def class_name(self) -> str:
 		class_node: TreeNode = self._get_classdef_node()
 		

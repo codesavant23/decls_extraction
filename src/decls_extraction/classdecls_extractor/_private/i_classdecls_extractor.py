@@ -27,6 +27,20 @@ class IClassDeclsExtractor(ABC):
 	
 	
 	@abstractmethod
+	def bases(self) -> List[str]:
+		"""
+			Retrieves the associated class base (super) classes
+            
+            Returns
+            -------
+                List[str]
+                    A list of strings containing the name of the base classes
+                    from which the associated class inherits
+		"""
+		pass
+	
+	
+	@abstractmethod
 	def class_name(self) -> str:
 		"""
 			Returns the name of the class associated with this IClassDeclsExtractor
