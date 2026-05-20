@@ -13,6 +13,20 @@ class IClassDeclsExtractor(ABC):
 	
 	
 	@abstractmethod
+	def decorators(self) -> List[str]:
+		"""
+			Retrieves the associated class decorators
+            
+            Returns
+            -------
+                List[str]
+                    A list of strings containing the decorator names without the
+                    preceding character `@`
+		"""
+		pass
+	
+	
+	@abstractmethod
 	def class_name(self) -> str:
 		"""
 			Returns the name of the class associated with this IClassDeclsExtractor
