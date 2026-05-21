@@ -54,6 +54,12 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 		self._class: TreeNode = class_node
 	
 	
+	def class_name(self) -> str:
+		class_node: TreeNode = self._get_classdef_node()
+		
+		return class_node.child_by_field_name("name").text.decode("utf-8")
+	
+	
 	def decorators(self) -> List[str]:
 		decors: List[str] = []
 		decorator: str
