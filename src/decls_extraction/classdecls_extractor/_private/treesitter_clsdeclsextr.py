@@ -16,7 +16,11 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
         the Python `tree-sitter` library
 	"""
 	
-	_METHS_TIPOLOGY: FrozenSet[str] = { "function_definition", "async_function_definition" }
+	_METHS_TIPOLOGY: FrozenSet[str] = {
+		"decorated_definition",
+		"function_definition",
+		"async_function_definition"
+	}
 	
 	def __init__(
 			self,
@@ -185,15 +189,7 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 		poss_method: TreeNode
 		meth_name: str
 		for stmt in classbody_node.named_children:
-			if stmt.type == "decorated_definition":
-				# Estrazione metodo decorato
-				poss_method = stmt.child_by_field_name("definition")
-			else:
-				# Estrazione metodo classico
-				poss_method = stmt
-				
-			if poss_method is not None:
-				self._add_ifmeth_tolist(stmt, class_methods, name_only)
+			self._add_ifmeth_tolist(stmt, class_methods, name_only)
 		
 		return class_methods
 	
@@ -224,12 +220,17 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
                     the entire method code will be added to the list
 		"""
 		needed: str
+		meth_node: TreeNode = node
+		
 		if node.type in self._METHS_TIPOLOGY:
+			if node.type == "decorated_definition":
+				meth_node = node.child_by_field_name("definition")
+				
 			if name_only:
-				needed = node.child_by_field_name("name").text.decode("utf-8").strip(" \n\t")
+				needed = meth_node.child_by_field_name("name").text.decode("utf-8").strip(" \n\t")
 			else:
 				needed = tw_dedent(
-					self._module_source[node.start_byte:node.end_byte].decode("utf-8")
+					self._module_source[meth_node.start_byte:meth_node.end_byte].decode("utf-8")
 				)
 			list_.append(needed)
 		

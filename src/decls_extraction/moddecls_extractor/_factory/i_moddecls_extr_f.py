@@ -1,10 +1,11 @@
+from abc import ABC, abstractmethod
 from .._private.i_moddecls_extractor import IModuleDeclsExtractor
 
 from ..._private.e_parser_tool import ECodeParserTool
 
 
 
-class IModuleDeclsExtractorFactory:
+class IModuleDeclsExtractorFactory(ABC):
 	"""
 		Represents a factory for each `IModuleDeclsExtractor`.
         
@@ -13,6 +14,7 @@ class IModuleDeclsExtractorFactory:
 	"""
 	
 	
+	@abstractmethod
 	def create(
 			self,
 			tool: ECodeParserTool,
