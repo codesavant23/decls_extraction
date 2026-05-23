@@ -7,9 +7,10 @@ from tree_sitter import (
 )
 from tree_sitter_python import language as py_grammar
 
+from ..._private.e_parser_tool import ECodeParserTool
 from ...classdecls_extractor import (
-	IClassDeclsExtractor,
-	TreeSitterClassDeclsExtractor
+	ClassDeclsExtractorFactory,
+	IClassDeclsExtractor
 )
 
 
@@ -186,5 +187,8 @@ class TreeSitterModuleDeclsExtractor(AMutableModuleDeclsExtractor):
 		"""
 		class_code: str = node.text.decode("utf-8")
 		list_.append(
-			TreeSitterClassDeclsExtractor(class_code)
+			ClassDeclsExtractorFactory.create(
+				ECodeParserTool.TREE_SITTER,
+				class_code
+			)
 		)

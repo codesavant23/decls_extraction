@@ -6,6 +6,7 @@ from tree_sitter import (
 	Node as TreeNode
 )
 from tree_sitter_python import language as py_grammar
+from textwrap import dedent as tw_dedent
 
 
 
@@ -57,7 +58,7 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 	def class_name(self) -> str:
 		class_node: TreeNode = self._get_classdef_node()
 		
-		return class_node.child_by_field_name("name").text.decode("utf-8")
+		return class_node.child_by_field_name("name").text.decode("utf-8").strip(" \n\t")
 	
 	
 	def decorators(self) -> List[str]:
@@ -66,7 +67,7 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 		
 		for poss_decor in self._class.named_children:
 			if poss_decor.type == "decorator":
-				decorator = poss_decor.text.decode("utf-8").replace("@", "")
+				decorator = poss_decor.text.decode("utf-8").replace("@", "").strip(" \n\t")
 				decors.append(decorator)
 				
 		return decors
@@ -78,13 +79,14 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 		
 		if bases is not None:
 			for base in bases.named_children:
-				superclss.append(base.text.decode("utf-8"))
+				superclss.append(base.text.decode("utf-8").strip(" \n\t"))
 			
 		return superclss
 	
 	
 	def contract(self) -> str:
 		contract: str = ""
+		contract_lines: list[str]
 		
 		body: TreeNode = self._get_classdef_node().child_by_field_name("body")
 		first_stmt: TreeNode
@@ -95,9 +97,12 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 			if (first_stmt.type == "expression_statement") and (first_stmt.named_children is not None):
 				express = first_stmt.named_children[0]
 				if express.type == "string":
-					contract = express.text.decode("utf-8")
+					contract_lines = express.text.decode("utf-8").splitlines()
+					contract_lines.pop(0)
+					contract_lines.pop(len(contract_lines)-1)
+					contract = "\n".join(contract_lines)
 					
-		return contract
+		return tw_dedent(contract)
 	
 	
 	def method_names(self) -> List[str]:
@@ -180,8 +185,6 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 		poss_method: TreeNode
 		meth_name: str
 		for stmt in classbody_node.named_children:
-			poss_method = None
-			
 			if stmt.type == "decorated_definition":
 				# Estrazione metodo decorato
 				poss_method = stmt.child_by_field_name("definition")
@@ -223,9 +226,11 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 		needed: str
 		if node.type in self._METHS_TIPOLOGY:
 			if name_only:
-				needed = node.child_by_field_name("name").text.decode("utf-8")
+				needed = node.child_by_field_name("name").text.decode("utf-8").strip(" \n\t")
 			else:
-				needed = self._module_source[node.start_byte:node.end_byte].decode("utf-8")
+				needed = tw_dedent(
+					self._module_source[node.start_byte:node.end_byte].decode("utf-8")
+				)
 			list_.append(needed)
 		
 		
