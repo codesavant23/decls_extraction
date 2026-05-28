@@ -6,13 +6,19 @@ A Python component for code declarations extraction (used in [GenTestsAILib](htt
 
 ## How to get the component
 
-### Installation
+### Latest stable release
+
+You can find the binaries of the component in the [release](https://github.com/codesavant23/decls_extraction/releases) section of this repository
+
+### Latest build
+
+#### Installation
 
   ```python
   pip install git+https://github.com/codesavant23/decls_extraction
   ```
 
-### Update
+#### Update
 
   ```python
   pip install git+https://github.com/codesavant23/decls_extraction --upgrade
