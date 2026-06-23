@@ -10,7 +10,6 @@ from textwrap import dedent as tw_dedent
 # ============= RegEx Utilities ============ #
 from regex import (
 	sub as reg_replace,
-	Match,
 	RegexFlag as RegexFlags,
 )
 # ========================================== #
@@ -143,6 +142,13 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 			return []
 		
 		class_methods: List[str] = self._extract_methods(classbody_node, with_code=True)
+		
+		for i, method in enumerate(class_methods):
+			class_methods[i] = tw_dedent(reg_replace(
+				self._4WHSPACES_PATT, "\t",
+				method,
+				flags=RegexFlags.MULTILINE
+			))
 		return class_methods
 	
 	
@@ -242,9 +248,7 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 			if name_only:
 				needed = meth_node.child_by_field_name("name").text.decode("utf-8").strip(" \n\t")
 			else:
-				needed = tw_dedent(
-					self._module_source[meth_node.start_byte:meth_node.end_byte].decode("utf-8")
-				)
+				needed = self._module_source[meth_node.start_byte:meth_node.end_byte].decode("utf-8")
 			list_.append(needed)
 		
 		

@@ -6,6 +6,13 @@ from tree_sitter import (
 	Node as TreeNode
 )
 from tree_sitter_python import language as py_grammar
+from textwrap import dedent as tw_dedent
+# ============= RegEx Utilities ============ #
+from regex import (
+	sub as reg_replace,
+	RegexFlag as RegexFlags,
+)
+# ========================================== #
 
 from ..._private.e_parser_tool import ECodeParserTool
 from ...classdecls_extractor import (
@@ -21,6 +28,7 @@ class TreeSitterModuleDeclsExtractor(AMutableModuleDeclsExtractor):
         the Python `tree-sitter` library
 	"""
 	
+	_4WHSPACES_PATT: str = r"(?m)(?: {4})+?"
 	_FUNCS_TIPOLOGY: FrozenSet[str] = {"function_definition", "async_function_definition"}
 	
 	def __init__(
@@ -70,6 +78,12 @@ class TreeSitterModuleDeclsExtractor(AMutableModuleDeclsExtractor):
 	
 	def extract_funcs(self) -> List[str]:
 		mod_funcs: List[str] = self._extract_functions(with_code=True)
+		for i, funct in enumerate(mod_funcs):
+			mod_funcs[i] = tw_dedent(reg_replace(
+				self._4WHSPACES_PATT, "\t",
+				funct,
+				flags=RegexFlags.MULTILINE
+			))
 		
 		return mod_funcs
 	
