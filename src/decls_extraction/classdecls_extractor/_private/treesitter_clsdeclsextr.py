@@ -7,6 +7,13 @@ from tree_sitter import (
 )
 from tree_sitter_python import language as py_grammar
 from textwrap import dedent as tw_dedent
+# ============= RegEx Utilities ============ #
+from regex import (
+	sub as reg_replace,
+	Match,
+	RegexFlag as RegexFlags,
+)
+# ========================================== #
 
 
 
@@ -16,6 +23,7 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
         the Python `tree-sitter` library
 	"""
 	
+	_4WHSPACES_PATT: str = r"(?m)(?: {4})+?"
 	_METHS_TIPOLOGY: FrozenSet[str] = {
 		"decorated_definition",
 		"function_definition",
@@ -105,7 +113,12 @@ class TreeSitterClassDeclsExtractor(IClassDeclsExtractor):
 					contract_lines.pop(0)
 					contract_lines.pop(len(contract_lines)-1)
 					contract = "\n".join(contract_lines)
-					
+				
+		contract = reg_replace(
+			self._4WHSPACES_PATT, "\t",
+			contract,
+			flags=RegexFlags.MULTILINE
+		)
 		return tw_dedent(contract)
 	
 	
